@@ -1,0 +1,25 @@
+---
+- name: Create Virtual Machine Snapshot
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    vcenter_host: "{{ lookup('env', 'VMWARE_HOST') }}"
+    vcenter_user: "{{ lookup('env', 'VMWARE_USER') }}"
+    vcenter_pass: "{{ lookup('env', 'VMWARE_PASSWORD') }}"
+    vcenter_certs: "{{ lookup('env', 'VMWARE_VALIDATE_CERTS') }}"
+
+  tasks:
+    - name: Create VM snapshot
+      vmware.vmware.vm_snapshot:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_user }}"
+        password: "{{ vcenter_pass }}"
+        validate_certs: "{{ vcenter_certs | default(false, true) }}"
+        datacenter: "{{ vm_datacenter }}"
+        folder: "/{{ vm_datacenter }}/vm/"
+        name: "{{ vm_name }}"
+        state: present
+        snapshot_name: "{{ snapshot_name }}"
+      delegate_to: localhost
